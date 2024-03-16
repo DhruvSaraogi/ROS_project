@@ -1,0 +1,199 @@
+<?xml version='1.0'?>
+
+<robot name="Rover" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:property name="cameraSize" value="0.025" />
+  <xacro:property name="cameraMass" value="0.1" />
+
+  <xacro:include filename="$(find rover_description)/urdf/rover.gazebo" />
+
+  <!--adding
+  colur to the robot in gazebo this will not visualized in rviz -->
+  <gazebo reference="base_body">
+    <material>Gazebo/Red</material>
+  </gazebo>
+
+  <gazebo reference="left_wheel">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <gazebo reference="right_wheel">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <gazebo reference="caster_wheel_link">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <gazebo reference="caster_plate_link">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+
+  <!-- Base base_footprint -->
+  <link name="base_body">
+    <collision>
+      <origin xyz="0.1 0 1.5" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://rover_description/meshes/Bot_Body.stl" />
+      </geometry>
+    </collision>
+
+    <visual name='base_body_visual'>
+      <origin xyz="0.1 0 1.8" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://rover_description/meshes/Bot_Body.stl" />
+      </geometry>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 1" rpy="0 0 0" />
+      <mass value="0.1" />
+      <inertia
+        ixx="0.001" ixy="0.0" ixz="0.0"
+        iyy="0.001" iyz="0.0"
+        izz="0.001" />
+    </inertial>
+  </link>
+
+  
+
+  <!--Castor
+  Plate  -->
+  <link name="caster_plate_link">
+    <visual>
+      <origin rpy="1.57079632679 0 0" xyz="0 -1.85 0.8" />
+      <geometry>
+        <mesh filename="package://rover_description/meshes/Bot_Castor_Plate.stl" />
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://rover_description/meshes/Bot_Castor_Plate.stl" />
+      </geometry>
+      <origin rpy="1.57079632679 0 0" xyz="0 -1.85 0.8" />
+    </collision>
+    <inertial>
+      <mass value="0.2" />
+      <origin xyz="0 0 0" />
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001" />
+    </inertial>
+  </link>
+  <joint name="caster_plate_joint" type="fixed">
+    <parent link="base_body" />
+    <child link="caster_plate_link" />
+    <origin rpy="-1.57079632679 0 0" xyz="0 1 0" />
+  </joint>
+
+
+  <!--Caster
+  wheel  -->
+  <link name="caster_wheel_link">
+    <visual>
+      <origin rpy="1.57079632679 0 0" xyz="0 -1.85 0.8" />
+      <geometry>
+        <mesh filename="package://rover_description/meshes/Bot_Castor_Wheel.stl" />
+      </geometry>
+
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://rover_description/meshes/Bot_Castor_Wheel.stl" />
+      </geometry>
+      <origin rpy="1.57079632679 0 0" xyz="0 -1.85 0.8" />
+    </collision>
+    <inertial>
+      <mass value="0.2" />
+      <origin xyz="0 0 0" />
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001" />
+    </inertial>
+  </link>
+  <joint name="caster_front_joint" type="fixed">
+    <parent link="base_body" />
+    <child link="caster_wheel_link" />
+    <origin rpy="-1.57079632679 0 0" xyz="0 1 0" />
+  </joint>
+  
+   <!-- Hokuyo Laser -->
+  <joint name="hokuyo_joint" type="fixed">
+    <axis xyz="0 1 0" />
+    <origin xyz="0 0.5 2.85" rpy="0 0 1.57" />
+    <parent link="base_body" />
+    <child link="hokuyo" />
+  </joint>
+
+
+  <link name="hokuyo">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.1 0.1 0.1" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://rover_description/meshes/hokuyo.dae" />
+      </geometry>
+    </visual>
+
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link>
+
+  <gazebo>
+    <plugin filename="libgazebo_ros_diff_drive.so" name="differential_drive_controller">
+      <legacyMode>false</legacyMode>
+      <alwaysOn>true</alwaysOn>
+      <updateRate>20</updateRate>
+      <leftJoint>joint_left_wheel</leftJoint>
+      <rightJoint>joint_right_wheel</rightJoint>
+      <wheelSeparation>0.2</wheelSeparation>
+      <wheelDiameter>0.2</wheelDiameter>
+      <torque>0.1</torque>
+      <commandTopic>cmd_vel</commandTopic>
+      <odometryTopic>odom</odometryTopic>
+      <odometryFrame>odom</odometryFrame>
+      <robotBaseFrame>link_chassis</robotBaseFrame>
+    </plugin>
+  </gazebo>
+
+
+  <gazebo reference="hokuyo">
+    <sensor type="ray" name="head_hokuyo_sensor">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>true</visualize>
+      <update_rate>40</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>720</samples>
+            <resolution>1</resolution>
+            <min_angle>-1.570796</min_angle>
+            <max_angle>1.570796</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.10</min>
+          <max>30.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so">
+        <topicName>/mybot/laser/scan</topicName>
+        <frameName>hokuyo</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+</robot>
