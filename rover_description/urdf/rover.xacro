@@ -7,8 +7,7 @@
 
   <xacro:include filename="$(find rover_description)/urdf/rover.gazebo" />
 
-  <!--adding
-  colur to the robot in gazebo this will not visualized in rviz -->
+  
   <gazebo reference="base_body">
     <material>Gazebo/Red</material>
   </gazebo>
