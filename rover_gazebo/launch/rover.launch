@@ -8,7 +8,7 @@
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
 
-  
+  <arg name="rvizconfig" default="$(find rover_gazebo)/launch/test.rviz"/>
 
   
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -20,11 +20,12 @@
     <arg name="debug" value="$(arg debug)"/>
   </include>
 
-  
   <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find rover_description)/urdf/rover.xacro'"/> 
 
+  
   <node name="mybot_spawn" pkg="gazebo_ros" type="spawn_model" output="screen"
    args="-urdf -param robot_description -x 0 -y 0 -z 0 -model rover" /> 
+   <remap from="rover/cmd_vel" to="cmd_vel" />
 
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
     <param name="use_gui" value="False"/>
@@ -34,6 +35,6 @@
   respawn="false" output="screen">
 </node>
 
-
+<node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)"/>
 
 </launch>
