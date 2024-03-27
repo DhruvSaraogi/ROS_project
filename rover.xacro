@@ -1,0 +1,265 @@
+<?xml version='1.0'?>
+
+<robot name="Rover" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:property name="cameraSize" value="0.025" />
+  <xacro:property name="cameraMass" value="0.1" />
+
+  <xacro:include filename="$(find rover_description)/urdf/rover.gazebo" />
+  <xacro:include filename="$(find rover_description)/urdf/materials.xacro" />
+
+  <!--adding
+  colur to the robot in gazebo this will not visualized in rviz -->
+  <gazebo reference="base_body">
+    <material>Gazebo/Red</material>
+  </gazebo>
+
+  <gazebo reference="left_wheel">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <gazebo reference="right_wheel">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <gazebo reference="caster_wheel_link">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <gazebo reference="caster_plate_link">
+    <material>Gazebo/Black</material>
+  </gazebo>
+  
+
+  <!-- Base base_footprint -->
+  <link name="base_body">
+    <inertial>
+      <origin xyz="0 0 0.54" rpy="0 0 0" />
+      <mass value="1" />
+      <inertia
+        ixx="0.001" ixy="0.0" ixz="0.0"
+        iyy="0.001" iyz="0.0"
+        izz="0.001" />
+    </inertial>
+    <collision>
+      <origin xyz="0 0 0.54" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://rover_description/meshes/Bot_Body.stl" scale="0.3 0.3 0.3" />
+      </geometry>
+    </collision>
+    <visual name='base_body_visual'>
+      <origin xyz="0 0 0.54" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://rover_description/meshes/Bot_Body.stl" scale="0.3 0.3 0.3" />
+      </geometry>
+    </visual>
+  </link>
+
+  <!-- Create wheel right -->
+  <link name="right_wheel">
+    <inertial>
+      <mass value="0.2" />
+      <origin rpy="${pi} ${pi/2} 0" xyz="0 0 0" />
+      <inertia ixx="0.00052666666" ixy="0" ixz="0" iyy="0.00052666666" iyz="0" izz="0.001" />
+    </inertial>
+    <collision name="link_right_wheel_collision">
+      <origin rpy="${pi} ${pi/2} 0" xyz="0 0 0" />
+      <geometry>
+        <mesh filename="package://rover_description/meshes/Wheel.STL" scale="1.25 1.25 1.25" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="${pi} ${pi/2} 0" xyz="0 0 0" />
+      <geometry>
+        <mesh filename="package://rover_description/meshes/Wheel.STL" scale="1.25 1.25 1.25" />
+      </geometry>
+      <!-- <material name="black" /> -->
+    </visual>
+  </link>
+
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="base_body" />
+    <child link="right_wheel" />
+    <origin rpy="0 0 ${pi}" xyz="0.43 0.3 0.25" />
+    <limit effort="10000" velocity="1000" />
+    <joint_properties damping="1.0" friction="1.0" />
+  </joint>
+
+
+  <!-- Create wheel left -->
+  <link name="left_wheel">
+    <inertial>
+      <mass value="0.2" />
+      <origin rpy="0 ${pi} 0" xyz="0 0 0" />
+      <inertia ixx="0.00052666666" ixy="0" ixz="0" iyy="0.00052666666" iyz="0" izz="0.001" />
+    </inertial>
+    <collision name="link_left_wheel_collision">
+      <origin rpy="0 ${pi/2} 0" xyz="0 0 0" />
+      <geometry>
+        <mesh filename="package://rover_description/meshes/Wheel.STL" scale="1.25 1.25 1.25" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0 ${pi/2} 0" xyz="0 0 0" />
+      <geometry>
+        <mesh filename="package://rover_description/meshes/Wheel.STL" scale="1.25 1.25 1.25" />
+      </geometry>
+      <!-- <material name="black" /> -->
+    </visual>
+  </link>
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="base_body" />
+    <child link="left_wheel" />
+    <origin rpy="0 0 ${pi}" xyz="-0.43 0.3 0.25" />
+    <limit effort="10000" velocity="1000" />
+    <joint_properties damping="1.0" friction="1.0" />
+  </joint>
+
+
+  <!--Castor
+  wheel Plate  -->
+  <link name="caster_plate_link">
+    <visual>
+      <origin rpy="${-pi/2} 0 0" xyz="0 0 0" />
+      <geometry>
+        <mesh filename="package://rover_description/meshes/caster_part.STL" scale="1 1 1" />
+      </geometry>
+      <!-- <material name="black" /> -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://rover_description/meshes/caster_part.STL" scale="1 1 1" />
+      </geometry>
+      <origin rpy="${-pi/2} 0 0" xyz="0 0 0" />
+    </collision>
+  </link>
+  <joint name="caster_plate_joint" type="continuous">
+    <parent link="base_body" />
+    <child link="caster_plate_link" />
+    <origin rpy="0 0 0" xyz="0 -0.3 0.23" />
+    <axis xyz="0 0 1"/>
+    <limit effort="10000" velocity="1000" />
+    <joint_properties damping="1.0" friction="1.0" />
+  </joint>
+
+
+  <!--Caster
+  wheel  -->
+  <link name="caster_wheel_link">
+    <visual>
+      <origin rpy="0 ${pi/2} 0" xyz="0 0 0.09" />
+      <geometry>
+        <mesh filename="package://rover_description/meshes/caster_wheel.STL" scale="1 1 1" />
+      </geometry>
+      <!-- <material name="black" /> -->
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://rover_description/meshes/caster_wheel.STL" scale="1 1 1" />
+      </geometry>
+      <origin rpy="0 ${pi/2} 0" xyz="0 0 0.09" />
+    </collision>
+  </link>
+  <joint name="caster_wheel_joint" type="fixed">
+    <parent link="base_body" />
+    <child link="caster_wheel_link" />
+    <origin rpy="0 0 0" xyz="0 -0.24 0" />
+  </joint>
+
+  <gazebo reference="caster_wheel_link">
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>1.0</maxVel>
+  </gazebo>
+
+
+  <!-- Hokuyo Laser -->
+  <joint name="hokuyo_joint" type="fixed">
+    <axis xyz="0 1 0" />
+    <origin xyz="0 0.15 0.88" rpy="0 0 ${pi/2}" />
+    <parent link="base_body" />
+    <child link="hokuyo" />
+  </joint>
+
+  <link name="hokuyo">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.1 0.1 0.1" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://rover_description/meshes/hokuyo.dae" />
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link>
+
+  <gazebo>
+    <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
+      <robotNamespace />
+      <alwaysOn>true</alwaysOn>
+      <updateRate>10</updateRate>
+      <legacyMode>true</legacyMode>
+      <leftJoint>left_wheel_joint</leftJoint>
+      <rightJoint>right_wheel_joint</rightJoint>
+      <wheelSeparation>0.5380</wheelSeparation>
+      <wheelDiameter>0.2410</wheelDiameter>
+      <torque>20</torque>
+      <commandTopic>cmd_vel</commandTopic>
+      <odometryTopic>odom</odometryTopic>
+      <odometryFrame>odom</odometryFrame>
+      <robotBaseFrame>base_body</robotBaseFrame>
+      <publishWheelTF>false</publishWheelTF>
+      <publishWheelJointState>false</publishWheelJointState>
+      <rosDebugLevel>na</rosDebugLevel>
+      <wheelAcceleration>0</wheelAcceleration>
+      <wheelTorque>5</wheelTorque>
+      <odometrySource>world</odometrySource>
+      <publishTf>1</publishTf>
+    </plugin>
+  </gazebo>
+
+
+  <gazebo reference="hokuyo">
+    <sensor type="ray" name="head_hokuyo_sensor">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>true</visualize>
+      <update_rate>40</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>720</samples>
+            <resolution>1</resolution>
+            <min_angle>-1.570796</min_angle>
+            <max_angle>1.570796</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.10</min>
+          <max>30.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so">
+        <topicName>/mybot/laser/scan</topicName>
+        <frameName>hokuyo</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+</robot>
