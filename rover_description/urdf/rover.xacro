@@ -8,8 +8,7 @@
   <xacro:include filename="$(find rover_description)/urdf/rover.gazebo" />
   <xacro:include filename="$(find rover_description)/urdf/materials.xacro" />
 
-  <!--adding
-  colur to the robot in gazebo this will not visualized in rviz -->
+  
   <gazebo reference="base_body">
     <material>Gazebo/Red</material>
   </gazebo>
@@ -29,6 +28,7 @@
   <gazebo reference="caster_plate_link">
     <material>Gazebo/Black</material>
   </gazebo>
+  
 
   <!-- Base base_footprint -->
   <link name="base_body">
@@ -115,62 +115,74 @@
   </joint>
 
 
-  <!--Castor
-  wheel Plate  -->
-  <link name="caster_plate_link">
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0" />
+   <!-- caster plate -->
+  <link name="caster_plate">
+    <inertial>
+      <mass value="0.2" />
+      <origin rpy="${-pi/2} 0 0" xyz="0 0 0" />
+      <inertia ixx="0.00052666666" ixy="0" ixz="0" iyy="0.00052666666" iyz="0" izz="0.001" />
+    </inertial>
+    <collision name="link_caster_plate_collision">
+      <origin rpy="${-pi/2} 0 0" xyz="0 0 0" />
       <geometry>
-        <mesh filename="package://rover_description/meshes/Bot_Castor_Plate.stl" scale="0.3 0.3 0.3" />
+        <mesh filename="package://rover_description/meshes/caster_part.STL" scale="1 1 1" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="${-pi/2} 0 0" xyz="0 0 0" />
+      <geometry>
+        <mesh filename="package://rover_description/meshes/caster_part.STL" scale="1 1 1" />
       </geometry>
       <material name="black" />
     </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://rover_description/meshes/Bot_Castor_Plate.stl" scale="0.3 0.3 0.3" />
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0" />
-    </collision>
   </link>
-  <joint name="caster_plate_joint" type="fixed">
+  <joint name="caster_plate_joint" type="continuous">
     <parent link="base_body" />
-    <child link="caster_plate_link" />
-    <origin rpy="0 0 0" xyz="0 0 0.56" />
+    <child link="caster_plate" />
+    <origin rpy="0 0 0" xyz="0 -0.3 0.23" />
+    <axis xyz="0 0 1" />
+    <limit effort="10000" velocity="1000" />
+    <joint_properties damping="1.0" friction="1.0" />
   </joint>
 
-
-  <!--Caster
-  wheel  -->
-  <link name="caster_wheel_link">
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0" />
+  <!-- caster wheel -->
+  <link name="caster_wheel">
+    <inertial>
+      <mass value="0.2" />
+      <origin rpy="0 ${pi} 0" xyz="0 0 0" />
+      <inertia ixx="0.00052666666" ixy="0" ixz="0" iyy="0.00052666666" iyz="0" izz="0.001" />
+    </inertial>
+    <collision name="link_left_wheel_collision">
+      <origin rpy="0 ${pi/2} 0" xyz="0 0 0" />
       <geometry>
-        <mesh filename="package://rover_description/meshes/Bot_Castor_Wheel.stl" scale="0.3 0.3 0.3" />
+        <mesh filename="package://rover_description/meshes/caster_wheel.STL" scale="1 1 1" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0 ${pi/2} 0" xyz="0 0 0" />
+      <geometry>
+        <mesh filename="package://rover_description/meshes/caster_wheel.STL" scale="1 1 1" />
       </geometry>
       <material name="black" />
     </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://rover_description/meshes/Bot_Castor_Wheel.stl" scale="0.3 0.3 0.3" />
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0" />
-    </collision>
-    <surface>
-      <friction>
-        <ode>
-          <mu>0</mu>
-          <mu2>0</mu2>
-          <slip1>1.0</slip1>
-          <slip2>1.0</slip2>
-        </ode>
-      </friction>
-    </surface>
   </link>
-  <joint name="caster_front_joint" type="fixed">
-    <parent link="base_body" />
-    <child link="caster_wheel_link" />
-    <origin rpy="0 0 0" xyz="0 0 0.56" />
+  <joint name="caster_wheel_joint" type="continuous">
+    <parent link="caster_plate" />
+    <child link="caster_wheel" />
+    <origin rpy="0 0 ${pi}" xyz="0 0.05 -0.15" />
+    <limit effort="10000" velocity="1000" />
+    <joint_properties damping="1.0" friction="1.0" />
   </joint>
+
+
+  <gazebo reference="caster_wheel_link">
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>1.0</maxVel>
+  </gazebo>
 
 
   <!-- Hokuyo Laser -->
@@ -242,14 +254,14 @@
           </horizontal>
         </scan>
         <range>
-          <min>0.10</min>
+          <min>0.1</min>
           <max>30.0</max>
           <resolution>0.01</resolution>
         </range>
         <noise>
           <type>gaussian</type>
           <mean>0.0</mean>
-          <stddev>0.01</stddev>
+          <stddev>0.0</stddev>
         </noise>
       </ray>
       <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so">

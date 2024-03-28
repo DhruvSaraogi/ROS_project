@@ -28,11 +28,11 @@
    <remap from="rover/cmd_vel" to="cmd_vel" />
 
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-    <param name="use_gui" value="False"/>
+    <param name="use_gui" value="True"/>
   </node> 
-  <!-- Combine joint values -->
+ 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
-  respawn="false" output="screen">
+  respawn="True" output="screen">
 </node>
 
 <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)"/>
