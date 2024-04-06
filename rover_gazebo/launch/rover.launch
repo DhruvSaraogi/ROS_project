@@ -24,15 +24,15 @@
 
   
   <node name="mybot_spawn" pkg="gazebo_ros" type="spawn_model" output="screen"
-   args="-urdf -param robot_description -x 0 -y 0 -z 0 -model rover" /> 
+   args="-urdf -param robot_description -x -2.5 -y -2 -z 0 -model rover" /> 
    <remap from="rover/cmd_vel" to="cmd_vel" />
 
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
     <param name="use_gui" value="True"/>
   </node> 
- 
+  <!-- Combine joint values -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
-  respawn="True" output="screen">
+  respawn="false" output="screen">
 </node>
 
 <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)"/>

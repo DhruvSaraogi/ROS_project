@@ -4,7 +4,7 @@
   <version>0.0.1</version>
   <description>description package of the Rover robot</description>
 
-  <maintainer email="venthan.thiru@gmail.com">thiru_ashok</maintainer>
+  <maintainer email="dhruv@todo.todo">dhruv</maintainer>
 
   
   <license>BSD</license>
@@ -14,7 +14,7 @@
 
 
   <export>
-   
+    <!-- Other tools can request additional information be placed here -->
 
   </export>
 </package>
