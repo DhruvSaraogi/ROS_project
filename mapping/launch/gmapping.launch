@@ -1,0 +1,20 @@
+<launch>
+  <arg name="configuration_basename" default="gazebo.lua"/>
+  <arg name="set_base_frame" default="base_body"/>
+  <arg name="set_odom_frame" default="odom"/>
+  <arg name="set_map_frame"  default="map"/>
+      <!-- Node for gmapping -->
+  <node name="gmapping" pkg="gmapping" type="slam_gmapping" output="screen">
+    <param name="base_frame" value="$(arg set_base_frame)"/>
+    <param name="odom_frame" value="$(arg set_odom_frame)"/>
+    <param name="map_frame"  value="$(arg set_map_frame)"/>
+    <!-- <param name="scan_topic" value="/mybot/laser/scan"/> -->
+    <param name="laser_frame" value="hokuyo"/>
+    <rosparam command="load" file="$(find mapping)/config/gmapping.yaml"/>
+
+  </node>
+    <!-- rviz -->
+  
+  <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(find mapping)/rviz/gmapping.rviz"/>
+</launch>
